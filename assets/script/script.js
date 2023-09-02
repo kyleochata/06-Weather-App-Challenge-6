@@ -16,6 +16,59 @@ const weatherApiKey = '19e81bf6f50853358a7f3ca608cd7627';
 let savedSearches = [];
 let today = dayjs().format('M/DD/YYYY');
 
+//render the data info into appropriate areas
+//if data undefined (return) Else (put in data then when trying to pass into next function)
+//.? operator
+const currentWeather = (currentWeather) => {
+  const nameofCity = currentWeather.name;
+  const currentWind = currentWeather.wind;
+  const currentTemp = currentWeather.temp;
+  const currentHumidity = currentWeather.Humidity;
+}
+
+
+const renderData = (weatherObject) => {
+  currentWeather(weatherObject);//add index for current weather
+  //get rid of current weather from weatherObject to pass into the 5day render 
+  fiveDayWeather(weatherObject);//add index for 
+
+}
+
+//take weatherURL from getCoordinates and fetch the weather at that given lon&lat
+const getWeather = (weatherURL) => {
+  fetch(weatherURL)
+  .then(function(response) {
+    return response.json()
+  })
+  .then(function(data) {
+    renderData(data);
+  })
+}
+
+//take city name and fetch the coordinates. return the weather URL with coordinates of the city searched for to pass into the weather fetch.
+const getCoordinates = (cityName) => {
+  const coordinateURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${weatherApiKey}`
+
+  fetch(coordinateURL)
+  .then(function(response){
+    if (response.status !== 200) {
+      alert('Sorry. That city does not seem to be acceptable. Please check the spelling and try again.');
+      return;
+    } else {
+
+      return response.json();
+    }
+  })
+//grab coordinates from the data and pass it to the weather API //need to save city name to LS and render a list item
+  .then(function(data) {
+
+    const latitude = data[0].lat;
+    const longitude = data[0].lon;
+    const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`; //put key into a var
+    getWeather(weatherURL);
+  })
+}
+
 const citySearchHandle = (event) => {
   event.preventDefault();
   const userInput = document.querySelector('#userInput').value().trim();
@@ -29,47 +82,8 @@ const citySearchHandle = (event) => {
   }
 }
 
-//take city name and fetch the coordinates. return the weather URL with coordinates of the city searched for to pass into the weather fetch.
-const getCoordinates = (cityName) => {
-  const coordinateURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${weatherApiKey}`
-
-  fetch(coordinateURL)
-  .then(function(response){
-    if (response.status !== 200) {
-      alert('Sorry. That city does not seem to be acceptable. Please check the spelling and try again.');
-      return;
-    } else {
-      savedSearches.push(userInput);
-      localStorage.setItem('lastSearched', JSON.stringify(savedSearches));
-      userInput.value('');
-      return response.json();
-    }
-  })
-//grab coordinates from the data and pass it to the weather API
-  .then(function(data) {
-
-    const latitude = data[0].lat;
-    const longitude = data[0].lon;
-    const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`; //put key into a var
-    getWeather(weatherURL);
-  })
-}
-//take weatherURL from getCoordinates and fetch the weather at that given lon&lat
-const getWeather = (weatherURL) => {
-  fetch(weatherURL)
-  .then(function(response) {
-    return response.json()
-  })
-  // .then(function(data) {
-  //   renderData(data);
-  // })
-}
-//render the data info into appropriate areas
-//if data undefined (return) Else (put in data then when trying to pass into next function)
-//.? operator
-
-// const renderData = (weatherObject) => {
-
-// }
-
+//save searches
+// savedSearches.push(userInput);
+// localStorage.setItem('lastSearched', JSON.stringify(savedSearches));
+// userInput.value('');
 searchBtn.addEventListener('click', citySearchHandle)
