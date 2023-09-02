@@ -10,27 +10,74 @@ when you type in a city and search:
     -Once at 5 cities, eliminate the oldest searched city
 */
 //Global Variables
-const searchBtn = document.querySelector('.search-button');
-const weatherApiKey = '19e81bf6f50853358a7f3ca608cd7627';
-
+const searchBtn = document.querySelector('.search-btn');
+const weatherApiKey = 'defa23f0bc2b8b4b8b56ffce207758d9';
+const iconSrc = 'https://openweathermap.org/img/wn/'
 let savedSearches = [];
 let today = dayjs().format('M/DD/YYYY');
-
+let dayCounter = 1;
 //render the data info into appropriate areas
 //if data undefined (return) Else (put in data then when trying to pass into next function)
 //.? operator
+
+const renderCurrentCard = (x, y, z, a, b, c) => {
+  const currentCityEl = document.querySelector('#current-city');
+  currentCityEl.textContent = `${x} ${today}`;
+  const currentWindSpan = document.querySelector('.current-wind');
+  currentWindSpan.textContent = `${y} mph`;
+  const currentTempSpan = document.querySelector('.current-temp');
+  currentTempSpan.textContent = `${z} F`;
+  const currentHumiditySpan = document.querySelector('.current-humidity');
+  currentHumiditySpan.textContent = `${a} %`;
+  const currentIcon = document.querySelector('.current-weather-icon');
+  currentIcon.setAttribute('src',`${iconSrc}${b}@2x.png`);
+  currentIcon.setAttribute('alt', `${c}`);
+}
+
 const currentWeather = (currentWeather) => {
-  const nameofCity = currentWeather.name;
-  const currentWind = currentWeather.wind;
-  const currentTemp = currentWeather.temp;
-  const currentHumidity = currentWeather.Humidity;
+  const targetCurrent = currentWeather.list[0];
+  const nameofCity = currentWeather.city.name;
+  const currentWind = targetCurrent.wind.speed;
+  const currentTemp = targetCurrent.main.temp;
+  const currentHumidity = targetCurrent.main.humidity;
+  const currentIcon = targetCurrent.weather[0].icon;
+  const currentIconDescription = targetCurrent.weather[0].description;
+  renderCurrentCard(nameofCity, currentWind, currentTemp, currentHumidity, currentIcon, currentIconDescription)
+}
+
+const renderFutureCard = (temp, wind, humidity, icon, description) => {
+  let daySelector = '.day-plus';
+  let futureImg = document.querySelector(`${daySelector}-${dayCounter}-img`);
+  futureImg.setAttribute('src', `${iconSrc}${icon}@2x.png`);
+  futureImg.setAttribute('alt', `${description}`);
+  let futureTemp = document.querySelector(`${daySelector}-${dayCounter}-temp`);
+  futureTemp.textContent = `${temp} F`;
+  let futureWind = document.querySelector(`${daySelector}-${dayCounter}-wind`);
+  futureWind.textContent = `${wind} mph`;
+  let futureHumidity = document.querySelector(`${daySelector}-${dayCounter}-humidity`);
+  futureHumidity.textContent = `${humidity} %`;
+}
+
+const renderFiveDayForecast = (listLoop) => {
+  const futureTemp = listLoop.main.temp;
+  const futureWind = listLoop.wind.speed;
+  const futureHumidity = listLoop.main.humidity;
+  const futureIcon = listLoop.weather[0].icon;
+  const futureDescription = listLoop.weather[0].description;
+  renderFutureCard(futureTemp, futureWind, futureHumidity, futureIcon, futureDescription);
 }
 
 
 const renderData = (weatherObject) => {
-  currentWeather(weatherObject);//add index for current weather
-  //get rid of current weather from weatherObject to pass into the 5day render 
-  fiveDayWeather(weatherObject);//add index for 
+  currentWeather(weatherObject);
+  for (let i = 1; i < 33; i + 8) {
+    let weatherListItem = weatherObject.list[i];
+    let futureDay = dayjs().add(dayCounter, 'day').format('M/DD/YYYY');
+    let fiveDayCardTitle = document.querySelector(`.day-plus-${dayCounter}`);
+    fiveDayCardTitle.textContent = `${futureDay}`;
+    renderFiveDayForecast(weatherListItem);
+    dayCounter++;
+  }
 
 }
 
@@ -64,14 +111,14 @@ const getCoordinates = (cityName) => {
 
     const latitude = data[0].lat;
     const longitude = data[0].lon;
-    const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`; //put key into a var
+    const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}&units=imperial`;
     getWeather(weatherURL);
   })
 }
 
 const citySearchHandle = (event) => {
   event.preventDefault();
-  const userInput = document.querySelector('#userInput').value().trim();
+  const userInput = document.querySelector('#user-input').value.trim();
   if (userInput == '') {
     alert('You must enter a city name. Please try again');
     return;
