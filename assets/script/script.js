@@ -144,6 +144,7 @@ const getCoordinates = (cityName) => {
       const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}&units=imperial`;
       setSearchHistory(citySearchedFor);
       getWeather(weatherURL);
+      renderPastSearchList();
     }
   })
   .catch(error => {
@@ -185,8 +186,7 @@ const citySearchHandle = (event) => {
   } else {
 
     getCoordinates(userInput);
-    setSearchHistory(userInput);
-    renderPastSearchList();
+
   }
 }
 //shows the ls data on page refresh or first visit if there is any LS data
