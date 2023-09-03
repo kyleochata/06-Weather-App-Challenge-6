@@ -120,7 +120,7 @@ const getWeather = (weatherURL) => {
 
 //take city name and fetch the coordinates. return the weather URL with coordinates of the city searched for to pass into the weather fetch.
 const getCoordinates = (cityName) => {
-  const coordinateURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${weatherApiKey}`
+  const coordinateURL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${weatherApiKey}`
 
   fetch(coordinateURL)
   .then(response => {
