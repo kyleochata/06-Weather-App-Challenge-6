@@ -97,7 +97,7 @@ const getWeather = (weatherURL) => {
   .then(response => {
     return response.json()
   })
-  .then(data=> {
+  .then(data => {
     renderData(data);
   })
   .catch(error => {
