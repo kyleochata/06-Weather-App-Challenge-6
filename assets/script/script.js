@@ -21,6 +21,8 @@ const renderCurrentCard = (x, y, z, a, b, c) => {
   const currentIcon = document.querySelector('.current-weather-icon');
   currentIcon.setAttribute('src',`${iconSrc}${b}@2x.png`);
   currentIcon.setAttribute('alt', `${c}`);
+  const currentDescriptionSpan = document.querySelector('.currently-description-span');
+  currentDescriptionSpan.textContent = `${c}`;
 }
 
 //gathers variables from fetch object
