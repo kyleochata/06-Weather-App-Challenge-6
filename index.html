@@ -14,12 +14,12 @@
 
 </head>
 
-<body class="bg-dark text-light">
+<body class="bg-dark text-light d-flex flex-column justify-content-between">
   <header class="text-center">
     <h1>Weather Forecast</h1>
   </header>
 
-  <main class="row justify-content-center">
+  <main class="row justify-content-center min-vh-100 flex-grow-1">
     <section class="main-left flex-column align-items-center justify-content-center col-md-3">
 
       <h3 class="col-12">Search a city: </h3>
@@ -37,7 +37,7 @@
 
     </section>
 
-    <section class="main-right col-md-9 row ">
+    <section class="main-right col-md-9 row invisible">
 
       <div class="current-city-weather col-12">
         <h2 id="current-city">current city</h2>
