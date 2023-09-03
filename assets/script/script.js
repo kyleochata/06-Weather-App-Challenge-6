@@ -105,6 +105,19 @@ const getWeather = (weatherURL) => {
   })
 }
 
+  //saves search history of cities looked up by user. Max 5 cities before oldest is removed
+  const setSearchHistory = (city) => {
+    savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
+    if (savedSearches !== null && city !== '' && !savedSearches.includes(city) && savedSearches.length < 5) {
+      savedSearches.push(city);
+      localStorage.setItem('cities', JSON.stringify(savedSearches));
+    } else if (savedSearches !== null && city !== '' && !savedSearches.includes(city)) {
+      savedSearches.shift();
+      savedSearches.push(city);
+      localStorage.setItem('cities', JSON.stringify(savedSearches));
+    }
+  }
+
 //take city name and fetch the coordinates. return the weather URL with coordinates of the city searched for to pass into the weather fetch.
 const getCoordinates = (cityName) => {
   const coordinateURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${weatherApiKey}`
@@ -112,36 +125,30 @@ const getCoordinates = (cityName) => {
   fetch(coordinateURL)
   .then(response => {
     if (response.status !== 200) {
-      alert('Sorry. That city does not seem to be acceptable. Please check the spelling and try again.');
+      alert(`Sorry. That search didn't work. Please try again.`);
+      console.log(response.status);
       return;
     } else {
       return response.json();
     }
   })
-//grab coordinates from the data and pass it to the weather API //need to save city name to LS and render a list item
+//grab coordinates from the data and pass it to the weather API. Saves city search only if the fetch promise is valid.
   .then(data => {
-
-    const latitude = data[0].lat;
-    const longitude = data[0].lon;
-    const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}&units=imperial`;
-    getWeather(weatherURL);
+    if (data[0] === undefined) {
+      alert(`Sorry. That city wasn't found. Please check the spelling and try again.`);
+      return;
+    } else {
+      const latitude = data[0].lat;
+      const longitude = data[0].lon;
+      const citySearchedFor = data[0].name;
+      const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}&units=imperial`;
+      setSearchHistory(citySearchedFor);
+      getWeather(weatherURL);
+    }
   })
   .catch(error => {
     console.log('Fetch error:', error)
   })
-}
-
-//saves search history of cities looked up by user. Max 5 cities before oldest is removed
-const setSearchHistory = (city) => {
-  savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
-  if (savedSearches !== null && city !== '' && !savedSearches.includes(city) && savedSearches.length < 5) {
-    savedSearches.push(city);
-    localStorage.setItem('cities', JSON.stringify(savedSearches));
-  } else if (savedSearches !== null && city !== '' && !savedSearches.includes(city)) {
-    savedSearches.shift();
-    savedSearches.push(city);
-    localStorage.setItem('cities', JSON.stringify(savedSearches));
-  }
 }
 
 //function for if user presses button of city they previously searched
@@ -149,7 +156,6 @@ const pastSearchBtnHandle = (event) => {
   event.preventDefault();
     let pastCityName = event.target.innerText;
     getCoordinates(pastCityName);
-
 }
 
 //render in list of past cities searched for
