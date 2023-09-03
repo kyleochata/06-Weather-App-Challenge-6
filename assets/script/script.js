@@ -1,18 +1,7 @@
-/*
-when you type in a city and search:
-  fetch city name to get back data
-    => once city data is back
-      -update the current city name
-      - fill in the temp, wind, humidity and add an icon displaying the weather(sunny = sun; cloudy=sun w/ clouds; etc.)
-      -fill in 5 day forecast with date in card title
-        -card needs wind, humidity, temp icon
-  Once a city is searched for, create a list with a clickable button that will research the cities weather.
-    -Once at 5 cities, eliminate the oldest searched city
-*/
+
 //Global Variables
 const searchBtn = document.querySelector('.search-btn');
 const mainREl = document.querySelector('.main-right');
-console.log(mainREl);
 const weatherApiKey = '17499ae5d8476246483628b382275828';
 const iconSrc = 'https://openweathermap.org/img/wn/'
 let savedSearches = [];
