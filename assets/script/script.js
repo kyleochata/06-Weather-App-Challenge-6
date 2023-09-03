@@ -58,7 +58,6 @@ const renderFutureCard = (temp, wind, humidity, icon, description) => {
   futureWind.textContent = `${wind} mph`;
   let futureHumidity = document.querySelector(`${daySelector}-${dayCounter}-humidity`);
   futureHumidity.textContent = `${humidity} %`;
-  console.log(futureHumidity);
 }
 
 const renderFiveDayForecast = (listLoop) => {
@@ -75,11 +74,11 @@ const renderData = (weatherObject) => {
   currentWeather(weatherObject);
   for (let i = 5; i < 39; i = (i + 8)) {
     let weatherListItem = weatherObject.list[i];
+    renderFiveDayForecast(weatherListItem);
     let futureDay = dayjs().add(dayCounter, 'day');
     futureDay = futureDay.format('M/DD/YYYY');
     let fiveDayCardTitle = document.querySelector(`.day-plus-${dayCounter}`);
     fiveDayCardTitle.textContent = `${futureDay}`;
-    renderFiveDayForecast(weatherListItem);
     dayCounter++;
   }
 
@@ -106,7 +105,6 @@ const getCoordinates = (cityName) => {
       alert('Sorry. That city does not seem to be acceptable. Please check the spelling and try again.');
       return;
     } else {
-
       return response.json();
     }
   })
@@ -130,7 +128,6 @@ const setSearchHistory = (city) => {
 
 const pastSearchBtnHandle = (event) => {
   event.preventDefault();
-  console.log(event);
     let pastCityName = event.target.innerText;
     getCoordinates(pastCityName);
 
@@ -169,8 +166,4 @@ renderPastSearchList()
 
 
 
-//save searches
-// savedSearches.push(userInput);
-// localStorage.setItem('lastSearched', JSON.stringify(savedSearches));
-// userInput.value('');
 searchBtn.addEventListener('click', citySearchHandle)
