@@ -11,7 +11,7 @@ when you type in a city and search:
 */
 //Global Variables
 const searchBtn = document.querySelector('.search-btn');
-const weatherApiKey = 'defa23f0bc2b8b4b8b56ffce207758d9';
+const weatherApiKey = '17499ae5d8476246483628b382275828';
 const iconSrc = 'https://openweathermap.org/img/wn/'
 let savedSearches = [];
 let today = dayjs().format('M/DD/YYYY');
@@ -70,12 +70,13 @@ const renderFiveDayForecast = (listLoop) => {
   renderFutureCard(futureTemp, futureWind, futureHumidity, futureIcon, futureDescription);
 }
 
-
+//render in cards below 5 day forecast. fiveDayCardTitle will display the next 5 day's dates per card.
 const renderData = (weatherObject) => {
   currentWeather(weatherObject);
   for (let i = 5; i < 39; i = (i + 8)) {
     let weatherListItem = weatherObject.list[i];
-    let futureDay = dayjs().add(dayCounter, 'day').format('M/DD/YYYY');
+    let futureDay = dayjs().add(dayCounter, 'day');
+    futureDay = futureDay.format('M/DD/YYYY');
     let fiveDayCardTitle = document.querySelector(`.day-plus-${dayCounter}`);
     fiveDayCardTitle.textContent = `${futureDay}`;
     renderFiveDayForecast(weatherListItem);
@@ -121,15 +122,25 @@ const getCoordinates = (cityName) => {
 
 const setSearchHistory = (city) => {
   savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
-  if (savedSearches !== null && city !== '') {
+  if (savedSearches !== null && city !== '' && !savedSearches.includes(city)) {
     savedSearches.push(city);
     localStorage.setItem('cities', JSON.stringify(savedSearches));
   }
 }
 
+const pastSearchBtnHandle = (event) => {
+  event.preventDefault();
+  console.log(event);
+    let pastCityName = event.target.innerText;
+    getCoordinates(pastCityName);
+
+}
+
 const renderPastSearchList = () => {
   savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
-  let listCityEl = document.querySelector('.list-group');
+  let listCityEl = document.querySelector('.city-searched-head');
+  listCityEl.innerHTML = '';
+  listCityEl.textContent = 'Last Searched Cities: '
   for (let i = 0; i < savedSearches.length; i++) {
     let buttonContent = savedSearches[i];
     let buttonEl = document.createElement('button');
@@ -137,9 +148,7 @@ const renderPastSearchList = () => {
     buttonEl.setAttribute('type', 'button');
     buttonEl.textContent = buttonContent;
     listCityEl.appendChild(buttonEl);
-    buttonEl.addEventListener('click', function(event){
-      console.log(event);
-    })
+    buttonEl.addEventListener('click', pastSearchBtnHandle);
   }
 }
 
@@ -156,6 +165,7 @@ const citySearchHandle = (event) => {
     renderPastSearchList();
   }
 }
+renderPastSearchList()
 
 
 
