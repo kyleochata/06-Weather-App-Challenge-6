@@ -50,12 +50,15 @@ const renderFutureCard = (temp, wind, humidity, icon, description) => {
   let futureImg = document.querySelector(`${daySelector}-${dayCounter}-img`);
   futureImg.setAttribute('src', `${iconSrc}${icon}@2x.png`);
   futureImg.setAttribute('alt', `${description}`);
+  let futureWillBe = document.querySelector(`${daySelector}-${dayCounter}-description`);
+  futureWillBe.textContent = `${description}`;
   let futureTemp = document.querySelector(`${daySelector}-${dayCounter}-temp`);
   futureTemp.textContent = `${temp} F`;
   let futureWind = document.querySelector(`${daySelector}-${dayCounter}-wind`);
   futureWind.textContent = `${wind} mph`;
   let futureHumidity = document.querySelector(`${daySelector}-${dayCounter}-humidity`);
   futureHumidity.textContent = `${humidity} %`;
+  console.log(futureHumidity);
 }
 
 const renderFiveDayForecast = (listLoop) => {
@@ -70,7 +73,7 @@ const renderFiveDayForecast = (listLoop) => {
 
 const renderData = (weatherObject) => {
   currentWeather(weatherObject);
-  for (let i = 1; i < 33; i + 8) {
+  for (let i = 5; i < 39; i = (i + 8)) {
     let weatherListItem = weatherObject.list[i];
     let futureDay = dayjs().add(dayCounter, 'day').format('M/DD/YYYY');
     let fiveDayCardTitle = document.querySelector(`.day-plus-${dayCounter}`);
@@ -116,6 +119,30 @@ const getCoordinates = (cityName) => {
   })
 }
 
+const setSearchHistory = (city) => {
+  savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
+  if (savedSearches !== null && city !== '') {
+    savedSearches.push(city);
+    localStorage.setItem('cities', JSON.stringify(savedSearches));
+  }
+}
+
+const renderPastSearchList = () => {
+  savedSearches = JSON.parse(localStorage.getItem('cities') || '[]');
+  let listCityEl = document.querySelector('.list-group');
+  for (let i = 0; i < savedSearches.length; i++) {
+    let buttonContent = savedSearches[i];
+    let buttonEl = document.createElement('button');
+    buttonEl.setAttribute('class', 'list-group-item list-group-item-action');
+    buttonEl.setAttribute('type', 'button');
+    buttonEl.textContent = buttonContent;
+    listCityEl.appendChild(buttonEl);
+    buttonEl.addEventListener('click', function(event){
+      console.log(event);
+    })
+  }
+}
+
 const citySearchHandle = (event) => {
   event.preventDefault();
   const userInput = document.querySelector('#user-input').value.trim();
@@ -125,9 +152,12 @@ const citySearchHandle = (event) => {
   } else {
 
     getCoordinates(userInput);
-
+    setSearchHistory(userInput);
+    renderPastSearchList();
   }
 }
+
+
 
 //save searches
 // savedSearches.push(userInput);
